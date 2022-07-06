@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.20)
 
 project(plateFlow LANGUAGES CXX C)
 set(CMAKE_CXX_STANDARD 17)
@@ -9,14 +9,14 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Boost HINTS "C:\\Users\\s\\Projects\\libraries\\boost_1_79_0\\stage\\lib\\cmake\\Boost-1.79.0" REQUIRED)
+find_package(Boost HINTS "C:\\libraries\\boost_1_79_0\\stage\\lib\\cmake\\Boost-1.79.0" REQUIRED)
 
 if(UNIX)
     find_package(spdlog REQUIRED)
     find_package(HDF5 REQUIRED COMPONENTS CXX)
 endif()
 
-find_package(VTK 9.0 HINTS "C:\\Users\\s\\Projects\\libraries\\vtk-build\\lib\\cmake\\vtk-9.1" REQUIRED COMPONENTS
+find_package(VTK 9.0 HINTS "C:\\libraries\\vtk-build\\lib\\cmake\\vtk-9.1" REQUIRED COMPONENTS
   CommonColor
   CommonCore
   FiltersSources
@@ -101,8 +101,8 @@ endif()
 # spdlog
 if (WIN32)
     target_link_libraries(plateFlow PRIVATE spdlog)
-    target_include_directories(plateFlow PRIVATE "C:\\Users\\s\\Projects\\libraries\\spdlog\\include")
-    target_link_directories(plateFlow PRIVATE "C:\\Users\\s\\Projects\\libraries\\spdlog-build\\Release")
+    target_include_directories(plateFlow PRIVATE "C:\\libraries\\spdlog\\include")
+    target_link_directories(plateFlow PRIVATE "C:\\libraries\\spdlog-build\\Release")
 else()
     target_link_libraries(plateFlow PRIVATE spdlog::spdlog)
 endif()
@@ -129,21 +129,21 @@ endif ()
 
 
 # Gmsh
-target_include_directories(plateFlow PRIVATE "C:\\Users\\s\\Projects\\libraries\\gmsh-4.9.5-source\\api")
-target_link_directories(plateFlow PRIVATE "C:\\Users\\s\\Projects\\libraries\\gmsh-build\\Release")
+target_include_directories(plateFlow PRIVATE "C:\\libraries\\gmsh-4.9.5-source\\api")
+target_link_directories(plateFlow PRIVATE "C:\\libraries\\gmsh-build\\Release")
 target_link_libraries(plateFlow PRIVATE gmsh)
 
 # Eigen
-find_package(Eigen3 REQUIRED NO_MODULE HINTS "C:\\Users\\s\\Projects\\libraries\\eigen-build")
+find_package(Eigen3 REQUIRED NO_MODULE HINTS "C:\\libraries\\eigen-build")
 target_link_libraries(plateFlow PRIVATE Eigen3::Eigen)
 
 # HDF5
 if(WIN32)
     add_compile_definitions(H5_BUILT_AS_DYNAMIC_LIB)
-    target_include_directories(plateFlow PRIVATE "C:\\Users\\s\\Projects\\libraries\\hdf5-build\\src")
-    target_include_directories(plateFlow PRIVATE "C:\\Users\\s\\Projects\\libraries\\hdf5-develop\\src")
-    target_include_directories(plateFlow PRIVATE "C:\\Users\\s\\Projects\\libraries\\hdf5-develop\\c++\\src")
-    target_link_directories(plateFlow PRIVATE "C:\\Users\\s\\Projects\\libraries\\hdf5-build\\bin\\Release")
+    target_include_directories(plateFlow PRIVATE "C:\\libraries\\hdf5-build\\src")
+    target_include_directories(plateFlow PRIVATE "C:\\libraries\\hdf5-develop\\src")
+    target_include_directories(plateFlow PRIVATE "C:\\libraries\\hdf5-develop\\c++\\src")
+    target_link_directories(plateFlow PRIVATE "C:\\libraries\\hdf5-build\\bin\\Release")
     target_link_libraries(plateFlow PRIVATE hdf5_cpp hdf5 )
 else()
     target_link_libraries(plateFlow PRIVATE ${HDF5_LIBRARIES})
@@ -152,10 +152,10 @@ endif()
 
 #PBrowser
 if(WIN32)
-    target_link_directories(plateFlow PRIVATE "C:\\Users\\s\\Projects\\libraries\\pbrowser-build")
-    target_include_directories(plateFlow PRIVATE "C:\\Users\\s\\Projects\\libraries\\PBrowser")
-    target_include_directories(plateFlow PRIVATE "C:\\Users\\s\\Projects\\libraries\\PBrowser\\propertybrowser")
-    target_include_directories(plateFlow PRIVATE "C:\\Users\\s\\Projects\\libraries\\PBrowser\\objectpropertybrowser")
+    target_link_directories(plateFlow PRIVATE "C:\\libraries\\pbrowser-build")
+    target_include_directories(plateFlow PRIVATE "C:\\libraries\\PBrowser")
+    target_include_directories(plateFlow PRIVATE "C:\\libraries\\PBrowser\\propertybrowser")
+    target_include_directories(plateFlow PRIVATE "C:\\libraries\\PBrowser\\objectpropertybrowser")
 else()
     target_link_directories(plateFlow PRIVATE "")
     target_include_directories(plateFlow PRIVATE /home/s2/Projects-Qt/PBrowser/objectpropertybrowser)
