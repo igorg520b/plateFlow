@@ -1,10 +1,11 @@
-#if !defined(Q_MOC_RUN) // MOC has a glitch when parsing tbb headers
 #ifndef FL333_H
 #define FL333_H
 
 #include <vector>
 #include <string>
 #include <algorithm>
+
+#include <spdlog/spdlog.h>
 
 #include <tbb/concurrent_vector.h>
 #include <tbb/concurrent_unordered_set.h>
@@ -13,21 +14,36 @@
 #include <Eigen/Core>
 #include <H5Cpp.h>
 
-#include <QMutex>
+#include <mutex>
 
 #include "ConcurrentPool.h"
 #include "equationofmotionsolver.h"
 
-namespace icy { class Mesh; struct Node; struct Element; }
 
-class icy::Mesh
+
+namespace icy { class FloeMesh; struct Node; struct Element; }
+
+class icy::FloeMesh
 {
 public:
-    Mesh();
-    ~Mesh();
-    Mesh& operator=(Mesh&) = delete;
+    FloeMesh();
+    ~FloeMesh();
+    FloeMesh& operator=(FloeMesh&) = delete;
 
+    std::vector<icy::Node*> nodes;
+    std::vector<icy::Element*> elems;
+    std::mutex mtxMeshUpdate;
+
+    void Reset();
+    void GoToStep0();
+
+    icy::Node* AddNode();
+    icy::Element* AddElement();
+
+private:
+    constexpr static unsigned reserveConst = 100000;
+    static ConcurrentPool<Node> NodeFactory;
+    static ConcurrentPool<Element> ElementFactory;
 
 };
 #endif
-#endif //Q_MOC_RUN

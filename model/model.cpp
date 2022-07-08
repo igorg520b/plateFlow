@@ -1,12 +1,11 @@
-#include "model.h"
+#include <spdlog/spdlog.h>
 #include "node.h"
 #include "element.h"
-#include "cohesivezone.h"
 
 #include <QDebug>
 #include <QThread>
+#include "model.h"
 
-#include <spdlog/spdlog.h>
 
 icy::Model::Model() { Reset(); }
 
@@ -17,42 +16,23 @@ void icy::Model::Reset()
     HDF5Close();
 
     currentStepDetails.Reset();
-    replayMode = false;
     abortRequested = false;
 
     stepHistory.clear();
     stepHistory.reserve(2000);
     stepHistory.push_back(currentStepDetails);
     mesh.Reset();
-    prms.Reset();
+    p.Reset();
 }
 
 void icy::Model::Prepare()
 {
     spdlog::info("icy::Model::Prepare()");
     abortRequested = false;
-    if(!replayMode) stepHistory.resize(currentStepDetails.stepNumber+1);    // trim the list of saved steps
 }
 
 bool icy::Model::Step()
 {
-    if(replayMode)
-    {
-        std::unique_lock<std::mutex> mlock(replayMutex);
-        cv_.wait(mlock);
-        spdlog::info("replay time {}", replayTime);
-        GoToSpecificTime(replayTime);
-        replayTime += prms.p.VideoTimeStep;
-        if(replayTime > stepHistory.back().time)
-        {
-            spdlog::info("replay done");
-            GoToStep(0);
-            replayMode = false;
-            return false;
-        }
-        return true;
-    }
-    else
     return SimulationSingleStep();
 }
 
@@ -85,30 +65,8 @@ void icy::Model::GoToStep(unsigned step)
 void icy::Model::Trim()
 {
     stepHistory.resize(currentStepDetails.stepNumber+1);
-    if(file != nullptr) icy::StepInfo::HDF5Trim(currentStepDetails.stepNumber, file);
+//    if(file != nullptr) icy::StepInfo::HDF5Trim(currentStepDetails.stepNumber, file);
 }
-
-
-void icy::Model::GoToSpecificTime(double whichTime)
-{
-    icy::StepInfo si_tmp;
-    si_tmp.time = whichTime;
-    auto it = std::lower_bound(stepHistory.begin(),stepHistory.end(),si_tmp,
-                           [](const icy::StepInfo &s1, const icy::StepInfo &s2){return s1.time < s2.time;});
-    unsigned offset = std::distance(stepHistory.begin(),it);
-    double blendingParam;
-    if(offset == stepHistory.size()-1) { offset--; blendingParam=1.;}
-    else
-    {
-        double t1 = stepHistory[offset].time;
-        double t2 = stepHistory[offset+2].time;
-        blendingParam = (whichTime-t1)/(t2-t1);
-    }
-    mesh.HDF5LoadStepLERP(file, offset, blendingParam);
-    spdlog::info("icy::Model::GoToSpecificTime {}; btw {} and {}; max {}", whichTime, offset, offset+1,stepHistory.size());
-}
-
-
 
 
 
@@ -130,11 +88,12 @@ bool icy::Model::SimulationSingleStep()
 
     try
     {
+        /*
         do
         {
             InitialGuess();
             spdlog::info("\n|{1:-^{0}}|{2:-^{0}}|{3:-^{0}}|{4:-^{0}}|{5:-^{0}}|{6:-^{0}}| ST {7:>}-{8:<2}",
-                         colWidth, " it "," sln "," tsf "," ra ", " brdlst ", " coll ", currentStepDetails.stepNumber, attempt);
+                         colWidth, " it "," sln "," tsf "," ra ", " brdlst ", " coll ", currentStep, attempt);
 
             double first_solution_norm = 0;
             int iter = 0;
@@ -167,6 +126,10 @@ bool icy::Model::SimulationSingleStep()
 
         } while (!(converges && sln_okay));
 
+
+*/
+
+        // TODO
         AcceptTentativeValues();
     }
     catch(...)
@@ -176,7 +139,7 @@ bool icy::Model::SimulationSingleStep()
         return false;
     }
 
-    return(currentStep < prms.p.MaxSteps && mesh.CountPinnedNodes() < mesh.nodes.size()/2);
+    return(currentStepDetails.stepNumber < p.MaxSteps);
 }
 
 
@@ -184,6 +147,8 @@ bool icy::Model::SimulationSingleStep()
 
 bool icy::Model::AssembleAndSolve()
 {
+    /*
+
     unsigned nElems = mesh.elems.size();
     unsigned nNodes = mesh.nodes.size();
     unsigned nCZs = mesh.czs.size();
@@ -304,20 +269,19 @@ bool icy::Model::AssembleAndSolve()
             nd->xt+=delta_x;
         }
     }
-
+*/
     return true;
 }
 
-void icy::Model::PositionIndenter()
+void icy::Model::PositionKinematicObjects()
 {
-    // set the position of the indenter
-    double h = timeStepFactor_tentative*prms.p.InitialTimeStep;
-    indenter_position = (simulationTime_current+h)*prms.p.indentation_rate;
+
 }
 
 
 void icy::Model::InitialGuess()
 {
+    /*
     double h = timeStepFactor_tentative*prms.p.InitialTimeStep;
     PositionIndenter();
     std::size_t nNodes = mesh.nodes.size();
@@ -328,10 +292,14 @@ void icy::Model::InitialGuess()
         if(nd==nullptr) { spdlog::critical("InitialGuess: nd[{}]==nullptr",i); throw std::runtime_error("InitialGuess");}
         if(!nd->pinned) nd->xt = nd->xn + h*nd->vn;
     }
+
+    */
 }
 
 void icy::Model::AcceptTentativeValues()
 {
+    /*
+
     unsigned nNodes = mesh.nodes.size();
     unsigned nCZs = mesh.czs.size();
     double h = timeStepFactor_tentative*p.InitialTimeStep;
@@ -381,20 +349,23 @@ void icy::Model::AcceptTentativeValues()
 
     if(currentStep %20) mesh.DetectOutOfBounds();
 
-
+*/
 }
+
+
 
 void icy::Model::ComputeVisualizedValues()
 {
     unsigned nElems = mesh.elems.size();
 #pragma omp parallel for
-    for(int i=0;i<nElems;i++) mesh.elems[i]->ComputeVisualizedVariables(prms.p);
+    for(int i=0;i<nElems;i++) mesh.elems[i]->ComputeVisualizedVariables(p);
 }
 
 
 
 void icy::Model::HDF5SaveNew(std::string fileName)
 {
+    /*
     HDF5Close();
     file = new H5::H5File(fileName, H5F_ACC_TRUNC);
     mesh.HDF5SaveInitialState(file);
@@ -403,10 +374,12 @@ void icy::Model::HDF5SaveNew(std::string fileName)
     this->fileName = fileName;
     stepHistory.back().HDF5Save(file);
     mesh.HDF5SaveCurrentStep(file, currentStepDetails.stepNumber);
+    */
 }
 
 void icy::Model::HDF5Open(std::string fileName)
 {
+    /*
     Reset();    // saves the previous file and clears geometry
     file = new H5::H5File(fileName, H5F_ACC_RDWR);
 
@@ -420,18 +393,22 @@ void icy::Model::HDF5Open(std::string fileName)
     this->fileName = fileName;
 
     spdlog::info("icy::Model::HDF5Open done {}",this->fileName);
+    */
 }
 
 void icy::Model::HDF5SaveStep()
 {
+    /*
     if(file == nullptr) return;
     stepHistory.back().HDF5Save(file);
     mesh.HDF5SaveCurrentStep(file, currentStepDetails.stepNumber);
+    */
 }
 
 
 void icy::Model::HDF5Close()
 {
+    /*
     if(file!=nullptr)
     {
         prms.HDF5SaveExisting(file);
@@ -439,6 +416,7 @@ void icy::Model::HDF5Close()
         file = nullptr;
         fileName = "";
     }
+    */
 }
 
 

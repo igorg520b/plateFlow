@@ -42,6 +42,7 @@ add_compile_definitions(QT_NO_KEYWORDS)
 
 add_executable(plateFlow
     gui/main.cpp
+
     gui/windows/mainwindow.cpp
     gui/windows/mainwindow.h
     gui/windows/mainwindow.ui
@@ -158,9 +159,9 @@ if(WIN32)
     target_include_directories(plateFlow PRIVATE "C:\\libraries\\PBrowser\\objectpropertybrowser")
 else()
     target_link_directories(plateFlow PRIVATE "")
-    target_include_directories(plateFlow PRIVATE /home/s2/Projects-Qt/PBrowser/objectpropertybrowser)
-    target_include_directories(plateFlow PRIVATE /home/s2/Projects-Qt/PBrowser/propertybrowser)
-    target_include_directories(plateFlow PRIVATE /home/s2/Projects-Qt/PBrowser)
+    target_include_directories(plateFlow PRIVATE /home/s2/Projects/PBrowser/objectpropertybrowser)
+    target_include_directories(plateFlow PRIVATE /home/s2/Projects/PBrowser/propertybrowser)
+    target_include_directories(plateFlow PRIVATE /home/s2/Projects/PBrowser)
 endif()
 target_link_libraries(plateFlow PRIVATE PBrowser)
 

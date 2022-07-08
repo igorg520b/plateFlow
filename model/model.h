@@ -13,7 +13,7 @@
 #include "modelcontrollerinterface.h"
 #include "equationofmotionsolver.h"
 
-#include "mesh.h"
+#include "floemesh.h"
 #include "modelstepinfo.h"
 
 
@@ -26,11 +26,11 @@ public:
     ~Model();
     void Reset();
 
-    PureParams p;
-    icy::Mesh mesh;
+    Params p;
+    icy::FloeMesh mesh;
     EquationOfMotionSolver solver;
 
-    icy::StepInfo currentStepDetails;
+    icy::StepInfo currentStep;
     std::vector<icy::StepInfo> stepHistory;
 
     void Prepare() override;        // invoked once, at simulation start
@@ -43,11 +43,6 @@ public:
 
     // replay / save video
     std::string fileName;           // for GUI
-    bool replayMode;                // for producing animation
-    double replayTime;
-    std::mutex replayMutex;         // for replay frame-by-frame
-    std::condition_variable cv_;    // for replay
-    void GoToSpecificTime(double whichTime);    // linearly interpolate between corresponding frames
 
 private:
     bool abortRequested;

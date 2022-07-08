@@ -174,8 +174,6 @@ void EquationOfMotionSolver::AddToEquation(const double *lE, const double *qE, c
             AddToQ(row,col,mat.data());
         }
     }
-
-
 }
 
 

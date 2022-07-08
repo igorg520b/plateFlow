@@ -1,7 +1,6 @@
 #include "meshrepresentation.h"
-#include "mesh.h"
+#include "floemesh.h"
 #include "element.h"
-#include "cohesivezone.h"
 #include "model.h"
 
 #include "spdlog/spdlog.h"
@@ -77,26 +76,13 @@ icy::MeshRepresentation::MeshRepresentation()
     mapper_czs->ScalarVisibilityOn();
 }
 
-void icy::MeshRepresentation::UnsafeSynchronizePositions()
-{
-
-    mesh->mutexMeshUpdate.lock();
-    for(icy::Node *nd : mesh->nodes)
-        points_deformable->SetPoint((vtkIdType)nd->globId, nd->xn.data());
-    points_deformable->Modified();
-    mesh->mutexMeshUpdate.unlock();
-
-    double indenterCenter = 1. + model->prms.p.R_indenter - model->indenter_position;
-    cylinder->SetCenter(0.0, 0.0, indenterCenter);
-    cylinder->SetRadius(model->prms.p.R_indenter);
-    cylinder->SetHeight(1.0);
-}
 
 
 void icy::MeshRepresentation::UnsafeSynchronizeTopology()
 {
-    mesh->mutexMeshUpdate.lock();
+    std::lock_guard<std::mutex> lk(mesh->mtxMeshUpdate);
 
+/*
     points_deformable->SetNumberOfPoints(mesh->nodes.size());
     for(icy::Node *nd : mesh->nodes)
     {
@@ -124,14 +110,29 @@ void icy::MeshRepresentation::UnsafeSynchronizeTopology()
     }
     ugrid_czs->SetCells(VTK_TRIANGLE, cellArray_czs);
     visualized_values_czs->SetNumberOfValues(mesh->czs.size());
-
-    mesh->mutexMeshUpdate.unlock();
-    UnsafeSynchronizeValues();
+*/
 }
 
 
 void icy::MeshRepresentation::UnsafeSynchronizeValues()
 {
+    std::lock_guard<std::mutex> lk(mesh->mtxMeshUpdate);
+
+
+    /*
+    for(icy::Node *nd : mesh->nodes)
+        points_deformable->SetPoint((vtkIdType)nd->globId, nd->xn.data());
+    points_deformable->Modified();
+
+    double indenterCenter = 1. + model->prms.p.R_indenter - model->indenter_position;
+    cylinder->SetCenter(0.0, 0.0, indenterCenter);
+    cylinder->SetRadius(model->prms.p.R_indenter);
+    cylinder->SetHeight(1.0);
+
+    */
+
+    /*
+
     if(mesh->nodes.size()==0)
     {
         visualized_values->SetNumberOfValues(0);
@@ -192,13 +193,14 @@ void icy::MeshRepresentation::UnsafeSynchronizeValues()
     visualized_values_czs->Modified();
     hueLut_czs->SetTableRange(0,2);
 
-
-    mesh->mutexMeshUpdate.unlock();
+*/
 }
 
 
 void icy::MeshRepresentation::ChangeVisualizationOption(int option)
 {
+
+/*
     spdlog::info("icy::Model::ChangeVisualizationOption {}", option);
     VisualizingVariable = (VisOpt)option;
 
@@ -229,15 +231,7 @@ void icy::MeshRepresentation::ChangeVisualizationOption(int option)
 
 
 
-/*
-        ugrid_deformable->GetCellData()->RemoveArray("visualized_values");
-        ugrid_deformable->GetPointData()->AddArray(visualized_values);
-        ugrid_deformable->GetPointData()->SetActiveScalars("visualized_values");
-        dataSetMapper_deformable->SetScalarModeToUsePointData();
-        dataSetMapper_deformable->ScalarVisibilityOn();
-        break;
-*/
     }
     UnsafeSynchronizeValues();
-
+*/
 }

@@ -24,8 +24,9 @@
 
 #include <vtkCylinderSource.h>
 
+#include <mutex>
 
-namespace icy { class MeshRepresentation; class Mesh; class Node; class Model;}
+namespace icy { class MeshRepresentation; class FloeMesh; class Node; class Model;}
 
 class icy::MeshRepresentation : public QObject
 {
@@ -36,7 +37,7 @@ public:
     ~MeshRepresentation() = default;
     MeshRepresentation& operator=(MeshRepresentation&) = delete;
 
-    icy::Mesh *mesh;
+    icy::FloeMesh *mesh;
     icy::Model *model;
 
     enum VisOpt { none, grain_id,
@@ -44,8 +45,6 @@ public:
                   elem_area, energy_density};
     Q_ENUM(VisOpt)
 
-
-    void UnsafeSynchronizePositions();    // synchronize what VTK shows with internal mesh representation; invoke from the main thread
     void UnsafeSynchronizeValues();
     void UnsafeSynchronizeTopology();
     void ChangeVisualizationOption(int option);  // called from the main thread

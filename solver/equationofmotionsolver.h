@@ -1,16 +1,15 @@
-#if !defined(Q_MOC_RUN) // MOC has a glitch when parsing tbb headers
 #ifndef EQUATIONOFMOTIONSOLVER_H
 #define EQUATIONOFMOTIONSOLVER_H
 
 #include <tbb/concurrent_vector.h>
 
-#include <Eigen/Core>
 #include <map>
 #include <unordered_map>
 #include <initializer_list>
 #include <vector>
 #include <memory>
 
+#include <Eigen/Core>
 
 
 class EquationOfMotionSolver
@@ -25,7 +24,7 @@ public:
     // add values to non-zero elements
     void AddToEquation(const double *linearEntries, const double *quadraticEntries, const std::initializer_list<int> ids);
 
-    constexpr static unsigned dofs = 3; // number of degrees of freedom per node (size of per-node blocks)
+    constexpr static unsigned dofs = 5; // number of degrees of freedom per node (size of per-node blocks)
     constexpr static unsigned dofssq = dofs*dofs;
 
     // solver
@@ -58,4 +57,3 @@ private:
 };
 
 #endif // EQUATIONOFMOTIONSOLVER_H
-#endif

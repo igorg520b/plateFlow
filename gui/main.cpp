@@ -1,3 +1,5 @@
+#include <omp.h>
+
 #include "mainwindow.h"
 #include <QApplication>
 #include <QSurfaceFormat>
@@ -9,7 +11,6 @@
 #include <QDebug>
 #include <iostream>
 
-#include <omp.h>
 
 
 int main(int argc, char *argv[])
@@ -34,9 +35,6 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     QApplication::setApplicationName("plateFlow");
     QApplication::setApplicationVersion("1.1");
-
-//    QSurfaceFormat fmt = QVTKOpenGLNativeWidget::defaultFormat();
-//    QSurfaceFormat::setDefaultFormat(fmt);
 
     MainWindow w;
     w.resize(1400,900);

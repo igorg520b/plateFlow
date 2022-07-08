@@ -213,22 +213,19 @@ void MainWindow::updateGUI()
 {
     slider1->blockSignals(true);
     slider1->setMaximum(model.stepHistory.size()-1);
-
-    if(!model.replayMode) slider1->setValue(model.currentStep);
+    slider1->setValue(model.currentStep.stepNumber);
     slider1->setEnabled(!worker->running);
     slider1->blockSignals(false);
 
     ui->action_simulation_single_step->setEnabled(!worker->running);
-    labelStepCount->setText(QString{"step: %1"}.arg(model.currentStep));
-    statusLabelStepFactor->setText(QString{"ltf: %1"}.arg(-std::log10(model.timeStepFactor_current), 5, 'f', 3, '0'));
-    labelElapsedTime->setText(QString{"t: %1"}.arg(model.simulationTime_current, 5, 'f', 3, '0'));
+    labelStepCount->setText(QString{"step: %1"}.arg(model.currentStep.stepNumber));
+    statusLabelStepFactor->setText(QString{"ltf: %1"}.arg(-std::log10(model.currentStep.currentStepFactor), 5, 'f', 3, '0'));
+    labelElapsedTime->setText(QString{"t: %1"}.arg(model.currentStep.time, 5, 'f', 3, '0'));
 
     meshRepresentation.UnsafeSynchronizePositions();
     meshRepresentation.UnsafeSynchronizeValues();
 
     renderWindow->Render();
-
-    if(model.replayMode) qDebug() << "updateGUI replay mode; step" << model.currentStep;
 }
 
 
