@@ -15,7 +15,9 @@ void icy::Element::AddToSparsityStructure(EquationOfMotionSolver &eq) const
 {}
 
 bool icy::Element::ComputeEquationEntries(EquationOfMotionSolver &eq, const Params &prms, const double timeStep)
-{}
+{
+    return true;
+}
 
 void icy::Element::ComputeVisualizedVariables(const Params &prms)
 {}

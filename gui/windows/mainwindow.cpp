@@ -117,7 +117,8 @@ MainWindow::MainWindow(QWidget *parent)
     meshRepresentation.mesh = &model.mesh;
     meshRepresentation.model = &model;
 
-    pbrowser->setActiveObject(&model.prms);
+    pwrapper.p = &model.p;
+    pbrowser->setActiveObject(&pwrapper);
     scalarBar->SetLookupTable(meshRepresentation.hueLut);
     renderer->AddActor(meshRepresentation.actor_mesh_deformable);
     renderer->AddActor(meshRepresentation.actor_czs);
@@ -222,7 +223,6 @@ void MainWindow::updateGUI()
     statusLabelStepFactor->setText(QString{"ltf: %1"}.arg(-std::log10(model.currentStep.currentStepFactor), 5, 'f', 3, '0'));
     labelElapsedTime->setText(QString{"t: %1"}.arg(model.currentStep.time, 5, 'f', 3, '0'));
 
-    meshRepresentation.UnsafeSynchronizePositions();
     meshRepresentation.UnsafeSynchronizeValues();
 
     renderWindow->Render();
@@ -345,9 +345,9 @@ void MainWindow::GeneratePlots()
 void MainWindow::importMesh_triggered()
 {
     if(worker->running) return;
-    QString fileName = QFileDialog::getOpenFileName(this, "Open MSH", QDir::current().path(), "Mesh Files (*.msh)");
+    QString fileName = QFileDialog::getOpenFileName(this, "Open STL", QDir::current().path(), "STL Files (*.stl)");
     if (fileName.isEmpty() || !QFile::exists(fileName)) return;
-    model.ImportMSH(fileName.toStdString());
+    model.Import(fileName.toStdString());
     meshRepresentation.UnsafeSynchronizeTopology();
     updateGUI();
     updateGUIFileInfo();
@@ -381,7 +381,7 @@ void MainWindow::screenshot_triggered()
     QString bn = fi.baseName();
     QDir dir(QDir::currentPath()+ "/" + bn);
     if(!dir.exists()) dir.mkdir(QDir::currentPath()+ "/" + bn);
-    QString outputPath = dir.path() + "/" + QString::number(model.currentStep) + ".png";
+    QString outputPath = dir.path() + "/" + QString::number(model.currentStep.stepNumber) + ".png";
 
     windowToImageFilter->SetInput(renderWindow);
     windowToImageFilter->SetScale(1); // image quality
@@ -408,12 +408,12 @@ void MainWindow::updateGUIFileInfo()
 
 void MainWindow::paintEvent(QPaintEvent *event)
 {
-    if(model.replayMode)
-    {
-        renderWindow->WaitForCompletion();
-        model.cv_.notify_one();
-        qDebug() << "paintEvent taking screenshot " << model.currentStep;
+//    if(model.replayMode)
+//    {
+//        renderWindow->WaitForCompletion();
+//        model.cv_.notify_one();
+//        qDebug() << "paintEvent taking screenshot " << model.currentStep;
         //on_actionScreenshot_triggered();
-    }
+//    }
 }
 

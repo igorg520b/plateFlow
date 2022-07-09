@@ -40,6 +40,10 @@ public:
     icy::Node* AddNode();
     icy::Element* AddElement();
 
+    void Import(std::string fileName);
+
+    void HDF5LoadStep(H5::H5File *file, int step);
+
 private:
     constexpr static unsigned reserveConst = 100000;
     static ConcurrentPool<Node> NodeFactory;

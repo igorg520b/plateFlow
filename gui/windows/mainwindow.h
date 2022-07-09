@@ -41,6 +41,7 @@
 #include "backgroundworker.h"
 #include "meshrepresentation.h"
 #include "model.h"
+#include "paramswrapper.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -87,6 +88,7 @@ private Q_SLOTS:
 private:
     icy::Model model;
     icy::MeshRepresentation meshRepresentation;
+    ParamsWrapper pwrapper;
     BackgroundWorker *worker;
 
     QString settingsFileName;       // includes current dir

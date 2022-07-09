@@ -97,6 +97,7 @@ if(WIN32)
 else()
     target_compile_options(plateFlow PRIVATE -fopenmp -Wno-stringop-overflow -Wno-invalid-offsetof)
     target_link_libraries(plateFlow PRIVATE gomp)
+    target_include_directories(plateFlow PRIVATE /usr/lib/gcc/x86_64-linux-gnu/11/include/)
 endif()
 
 # spdlog
@@ -130,8 +131,10 @@ endif ()
 
 
 # Gmsh
+if(WIN32)
 target_include_directories(plateFlow PRIVATE "C:\\libraries\\gmsh-4.9.5-source\\api")
 target_link_directories(plateFlow PRIVATE "C:\\libraries\\gmsh-build\\Release")
+endif()
 target_link_libraries(plateFlow PRIVATE gmsh)
 
 # Eigen
@@ -158,7 +161,7 @@ if(WIN32)
     target_include_directories(plateFlow PRIVATE "C:\\libraries\\PBrowser\\propertybrowser")
     target_include_directories(plateFlow PRIVATE "C:\\libraries\\PBrowser\\objectpropertybrowser")
 else()
-    target_link_directories(plateFlow PRIVATE "")
+    target_link_directories(plateFlow PRIVATE "/home/s2/Projects/build-PBrowser-Desktop_Qt_5_15_2_GCC_64bit-Release")
     target_include_directories(plateFlow PRIVATE /home/s2/Projects/PBrowser/objectpropertybrowser)
     target_include_directories(plateFlow PRIVATE /home/s2/Projects/PBrowser/propertybrowser)
     target_include_directories(plateFlow PRIVATE /home/s2/Projects/PBrowser)

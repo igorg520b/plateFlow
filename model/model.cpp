@@ -15,12 +15,12 @@ void icy::Model::Reset()
 {
     HDF5Close();
 
-    currentStepDetails.Reset();
+    currentStep.Reset();
     abortRequested = false;
 
     stepHistory.clear();
     stepHistory.reserve(2000);
-    stepHistory.push_back(currentStepDetails);
+    stepHistory.push_back(currentStep);
     mesh.Reset();
     p.Reset();
 }
@@ -49,14 +49,14 @@ void icy::Model::GoToStep(unsigned step)
     spdlog::info("icy::Model::GoToStep {}",step);
     if(step == 0 && file == nullptr)
     {
-        currentStepDetails.Reset();
+        currentStep.Reset();
         mesh.GoToStep0();
     }
     else
     {
         if(file == nullptr) return;
         mesh.HDF5LoadStep(file, step); // load mesh state from HDF5
-        currentStepDetails = stepHistory[step];
+        currentStep = stepHistory[step];
     }
     PositionKinematicObjects();
     ComputeVisualizedValues();
@@ -64,7 +64,7 @@ void icy::Model::GoToStep(unsigned step)
 
 void icy::Model::Trim()
 {
-    stepHistory.resize(currentStepDetails.stepNumber+1);
+    stepHistory.resize(currentStep.stepNumber+1);
 //    if(file != nullptr) icy::StepInfo::HDF5Trim(currentStepDetails.stepNumber, file);
 }
 
@@ -83,7 +83,7 @@ bool icy::Model::SimulationSingleStep()
     bool sln_okay;   // false if a CZ loads too fast or if solver cannot solve
     // gradually increase the time step
     constexpr double decayFactor = 1.1;
-    double &tsf = currentStepDetails.tentativeStepFactor;
+    double &tsf = currentStep.tentativeStepFactor;
     tsf = std::clamp(tsf*decayFactor, 0., 1.);
 
     try
@@ -139,7 +139,7 @@ bool icy::Model::SimulationSingleStep()
         return false;
     }
 
-    return(currentStepDetails.stepNumber < p.MaxSteps);
+    return(currentStep.stepNumber < p.MaxSteps);
 }
 
 

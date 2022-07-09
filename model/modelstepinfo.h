@@ -8,10 +8,12 @@ namespace icy { struct StepInfo;}
 
 struct icy::StepInfo
 {
-    int stepNumber = 0;
-    double time = 0;
-    double currentStepFactor = 1;
-    double tentativeStepFactor = 1;
+    int stepNumber;
+    double time;
+    double currentStepFactor;
+    double tentativeStepFactor;
+
+    StepInfo() {Reset();}
 
     void Reset()
     {

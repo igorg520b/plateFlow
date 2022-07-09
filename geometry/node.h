@@ -20,6 +20,7 @@ struct icy::Node
     void Initialize(const Node *other);
 
     int eqId;      // squential number in the system of equations (-1 if prescribed)
+    int globId;
     int locId;          // sequential number in a given floe
     double area;        // mass that the node "represents", for applying various forces
     double vertical_force; // for testing

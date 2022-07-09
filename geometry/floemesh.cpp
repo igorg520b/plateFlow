@@ -56,9 +56,17 @@ icy::Element* icy::FloeMesh::AddElement()
 {
     Element* elem = ElementFactory.take();
     elem->Reset();
-    elem->elemId = (int)elems.size();
     elems.push_back(elem);
     return elem;
 }
 
 
+void icy::FloeMesh::Import(std::string fileName)
+{
+
+}
+
+void icy::FloeMesh::HDF5LoadStep(H5::H5File *file, int step)
+{
+
+}
