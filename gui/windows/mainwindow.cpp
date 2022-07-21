@@ -77,6 +77,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->toolBar->addWidget(comboBox_visualizations);
 
     // slider
+    ui->toolBar->addSeparator();
     slider1 = new QSlider(Qt::Horizontal);
     ui->toolBar->addWidget(slider1);
     slider1->setTracking(true);

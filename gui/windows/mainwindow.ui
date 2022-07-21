@@ -76,7 +76,6 @@
    <addaction name="action_simulation_start"/>
    <addaction name="action_simulation_single_step"/>
    <addaction name="separator"/>
-   <addaction name="separator"/>
    <addaction name="actionShow_Plots"/>
    <addaction name="separator"/>
   </widget>

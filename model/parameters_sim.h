@@ -20,18 +20,21 @@ struct icy::Params
     int MaxSteps, MinIter, MaxIter;
     double ConvergenceEpsilon, ConvergenceCutoff;
 
-
+    // properties, material parameters
     double Gravity, WaterDensity, IceDensity, PoissonsRatio, YoungsModulus;
     double Thickness;
 
-    int SubstepIterations, SubstepRadius;
-    double SubsteppingTimestepFactor;
-
+    // fracture
+    double FractureTractionThreshold;
     double FractureWeakeningCoeff;
     double CutoffCoefficient; // used to reduce the computation cost of max_traction
     double FractureAngleThreshold, FractureAreaThreshold;
-    double VideoTimeStep;
+    double SubsteppingTimestepFactor;
+    int SubstepIterations, SubstepRadius, FractureMaxSubsteps;
 
+
+    // misc
+    double VideoTimeStep;
 
     Eigen::Matrix3d elasticityMatrix;        // this has to be pre-computed whenever Y and nu change
     Eigen::Matrix2d D_mats;
@@ -78,6 +81,8 @@ struct icy::Params
 
         FractureAngleThreshold = 10;
         FractureAreaThreshold = 1e-4;
+        FractureTractionThreshold = 1e5;
+        FractureMaxSubsteps = 1000;
 
         RecomputeMatrices();
 
