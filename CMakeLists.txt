@@ -64,6 +64,9 @@ add_executable(plateFlow
     geometry/floemesh.cpp
     geometry/floemesh.h
 
+    geometry/mesh.h
+    geometry/mesh.cpp
+
     model/parameters_sim.h
     model/parameters_sim.cpp
 
